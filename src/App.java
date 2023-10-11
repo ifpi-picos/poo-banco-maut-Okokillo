@@ -99,6 +99,7 @@ public class App {
     
             if (client.getCpf().equals(cpf)) {
                 System.out.println("Bem-vindo(a), " + client.getNome());
+                menuCliente(input, null, clientes);
             } else {
                 System.out.println("CPF incorreto.");
             }
@@ -107,13 +108,64 @@ public class App {
         }
     }
 
-    public static void menuCliente() {
+    public static void menuCliente(Scanner input, List<Conta> contas, List<Cliente> clientes) {
         System.out.println("1 - Depositar");
         System.out.println("2 - Sacar");
         System.out.println("3 - Transferir");
         System.out.println("4 - Ver extrato");
+        System.out.println("5 - Criar conta");
+        System.out.println("6 - Editar dados");
+        System.out.println("7 - Visualizar dados");
         System.out.println("0 - Sair");
+        System.out.print("Digite a opção desejada: ");
+        int opcao = input.nextInt();
 
+        // switch (opcao) {
+        //     case 1:
+        //         System.out.print("Digite o número da conta destino para o depósito: ");
+        //         int numero = input.nextInt();
 
+        //     case 5:
+        //         newConta(input, contas, clientes);
+
+        //     case 7:
+        //         visualizarDadosCliente(clientes, contas);
+
+        // }
     }
+
+    // public static void newConta(Scanner input, List<Conta> contas, List<Cliente> clientes) {
+    //     System.out.println("Criar uma nova conta:");
+
+    //     Cliente client = clientes.stream().filter(client -> client.)
+
+    //     Conta novaConta = new Conta(cliente);
+
+    //     contas.add(novaConta);
+    //     System.out.println("Conta criada com sucesso.");
+    // }
+
+    // public static void visualizarDadosCliente(List<Cliente> clientes, List<Conta> contas) {
+    //     System.out.println("Dados do cliente:");
+    //     System.out.println("Nome: " + cliente.getNome());
+    //     System.out.println("CPF: " + cliente.getCpf());
+    //     System.out.println("Data de Nascimento: " + cliente.getDataNascimento());
+    //     System.out.println("Endereço: " + cliente.getEndereco());
+    
+    //     int numContas = 0;
+    //     for (Conta conta : contas) {
+    //         if (conta.getCliente() == cliente) {
+    //             numContas++;
+    //             System.out.println("Conta " + numContas + ":");
+    //             System.out.println("Agência: " + conta.getAgencia());
+    //             System.out.println("Número da Conta: " + conta.getNumero());
+    //             System.out.println("Saldo: " + conta.getSaldo());
+    //             System.out.println();
+    //         }
+    //     }
+    
+    //     if (numContas == 0) {
+    //         System.out.println("O cliente não possui contas.");
+    //     }
+    // }
 }

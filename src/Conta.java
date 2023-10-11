@@ -7,20 +7,18 @@ public class Conta {
     private int numero;
     private int agencia;
     private double saldo;
-    private String tipo;
     private Cliente cliente;
     private List<Transacao> transacoes;
 
-    public Conta(Cliente cliente, String tipo) {
+    public Conta(Cliente cliente) {
         this.cliente = cliente;
         this.numero = numberAccount++;
         this.saldo = 0.0;
-        this.tipo = tipo;
         this.transacoes = new ArrayList<>();
     }
 
     public Conta create() {
-        return new Conta(cliente, tipo);
+        return new Conta(cliente);
     }
 
     public void depositar(double valor) {
