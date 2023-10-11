@@ -20,7 +20,7 @@ public class Endereco {
         this.numero = numero;
     }
 
-    public Endereco copyWith() {
+    public Endereco create() {
         return new Endereco(rua, bairro, cidade, estado, cep, numero);
     }
 

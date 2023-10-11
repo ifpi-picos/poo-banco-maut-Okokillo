@@ -17,7 +17,7 @@ public class Cliente {
         this.endereco = endereco;
     }
 
-    public Cliente copyWith() {
+    public Cliente create() {
         return new Cliente(nome, cpf, dataNascimento, endereco);
     }
 
