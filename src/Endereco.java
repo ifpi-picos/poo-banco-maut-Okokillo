@@ -1,9 +1,4 @@
-import java.util.ArrayList;
-import java.util.List;
-
 public class Endereco {
-    List<Endereco> endereco = new ArrayList<>();
-
     private String rua;
     private String bairro;
     private String cidade;

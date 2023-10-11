@@ -1,10 +1,6 @@
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Cliente {
-    List<Cliente> cliente = new ArrayList<>();
-
     private String nome;
     private String cpf;
     private LocalDate dataNascimento;

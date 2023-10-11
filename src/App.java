@@ -13,6 +13,8 @@ public class App {
         while (true) {
             System.out.println("---------MENU---------");
             System.out.println("1 - Cadastrar cliente");
+            System.out.println("2 - Acessar cliente");
+            System.out.println("3 - Menu do servidor");
             System.out.println("0 - Sair");
             System.out.print("Digite a opção desejada: ");
             int opcao = input.nextInt();
@@ -20,11 +22,18 @@ public class App {
 
             switch (opcao) {
                 case 1:
-                    // newCliente(input, clientes, enderecos, contas);
+                    newEndereco(enderecos, input);
+                    newCliente(input, clientes, enderecos);
                     break;
+
+                case 2:
+                    loginClient(input, clientes);
+                    break;
+
                 case 0:
                     System.exit(0);
                     break;
+
                 default:
                     System.out.println("Opção inválida");
                     break;
@@ -32,49 +41,79 @@ public class App {
         }
     }
 
-    // public static void newCliente(Scanner input, List<Cliente> clientes, List<Endereco> enderecos, List<Conta> contas) {
-    //     System.out.print("Digite o nome do cliente: ");
-    //     String nome = input.nextLine();
-    //     System.out.print("Digite o cpf do cliente: ");
-    //     String cpf = input.nextLine();
-    //     System.out.print("Digite a data de nascimento do cliente (YYYY-MM-DD): ");
-    //     LocalDate dataNascimento = LocalDate.parse(input.nextLine());
+    public static void newCliente(Scanner input, List<Cliente> clientes, List<Endereco> enderecos) {
+        System.out.print("Digite o nome do cliente: ");
+        String nome = input.nextLine();
+        System.out.print("Digite o cpf do cliente: ");
+        String cpf = input.nextLine();
+        System.out.print("Digite a data de nascimento do cliente (YYYY-MM-DD): ");
+        LocalDate dataNascimento = LocalDate.parse(input.nextLine());
 
-    //     Cliente cliente = new Cliente(nome, cpf, dataNascimento);
+        int last = enderecos.size() - 1;
 
-    //     newEndereco(enderecos, input);
+        Endereco endereco = null;
 
-    //     Endereco endereco = enderecos.get(enderecos.size() - 1);
+        if (last >= 0) {
+            endereco = enderecos.get(last);
+        } else {
+            endereco = null;
+        }
 
-    //     cliente.setEndereco(endereco);
+        Cliente cliente = new Cliente(nome, cpf, dataNascimento, endereco);
 
-    //     clientes.add(cliente);
+        clientes.add(cliente);
+    }
 
-    //     Conta conta = new Conta(cliente, endereco);
+    public static void newEndereco(List<Endereco> enderecos, Scanner input) {
+        System.out.print("Digite o nome da rua: ");
+        String rua = input.nextLine();
+        System.out.print("Digite o nome do bairro: ");
+        String bairro = input.nextLine();
+        System.out.print("Digite o nome da cidade: ");
+        String cidade = input.nextLine();
+        System.out.print("Digite o nome do estado: ");
+        String estado = input.nextLine();
+        System.out.print("Digite o nome do cep: ");
+        String cep = input.nextLine();
+        System.out.print("Digite o nome do numero: ");
+        int numero = input.nextInt();
+        input.nextLine();
 
-    //     contas.add(conta);
+        Endereco endereco = new Endereco(rua, bairro, cidade, estado, cep, numero);
 
-    //     System.out.println("Cliente cadastrado com sucesso!");
+        enderecos.add(endereco);
+    }
 
-    //     System.out.println("Dados do cliente: " + cliente.toString());
-    // }
+    public static void loginClient(Scanner input, List<Cliente> clientes) {
+        System.out.println("Digite o nome do cliente: ");
+        String name = input.nextLine();
+    
+        Cliente client = clientes.stream()
+                .filter(cliente -> cliente.getNome().equals(name))
+                .findFirst()
+                .orElse(null);
+    
+        if (client != null) {
+            System.out.println("Digite seu CPF: ");
+            String cpf = input.nextLine();
+    
+            if (client.getCpf().equals(cpf)) {
+                System.out.println("Bem-vindo(a), " + client.getNome());
+            } else {
+                System.out.println("CPF incorreto.");
+            }
+        } else {
+            System.out.println("Cliente não encontrado.");
+        }
+    }
 
-    // public static void newEndereco(List<Endereco> enderecos, Scanner input) {
-    //     System.out.print("Digite o nome da rua: ");
-    //     String rua = input.nextLine();
-    //     System.out.print("Digite o nome do bairro: ");
-    //     String bairro = input.nextLine();
-    //     System.out.print("Digite o nome da cidade: ");
-    //     String cidade = input.nextLine();
-    //     System.out.print("Digite o nome do estado: ");
-    //     String estado = input.nextLine();
-    //     System.out.print("Digite o nome do cep: ");
-    //     String cep = input.nextLine();
-    //     System.out.print("Digite o nome do numero: ");
-    //     int numero = input.nextInt();
+    public static void menuCliente() {
+        System.out.println("1 - Depositar");
+        System.out.println("2 - Sacar");
+        System.out.println("3 - Transferir");
+        System.out.println("4 - Ver extrato");
+        System.out.println("0 - Sair");
 
-    //     Endereco endereco = new Endereco(rua, bairro, cidade, estado, cep, numero);
 
-    //     enderecos.add(endereco);
-    // }
+    }
 }
