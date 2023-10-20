@@ -2,6 +2,7 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter; 
 
 public class App {
     public static void main(String[] args) throws Exception {
@@ -99,7 +100,7 @@ public class App {
     
             if (client.getCpf().equals(cpf)) {
                 System.out.println("Bem-vindo(a), " + client.getNome());
-                menuCliente(input, null, clientes);
+                menuCliente(input, null, clientes, client);
             } else {
                 System.out.println("CPF incorreto.");
             }
@@ -108,64 +109,67 @@ public class App {
         }
     }
 
-    public static void menuCliente(Scanner input, List<Conta> contas, List<Cliente> clientes) {
+    public static void menuCliente(Scanner input, List<Conta> contas, List<Cliente> clientes, Cliente cliente) {
         System.out.println("1 - Depositar");
         System.out.println("2 - Sacar");
         System.out.println("3 - Transferir");
         System.out.println("4 - Ver extrato");
         System.out.println("5 - Criar conta");
         System.out.println("6 - Editar dados");
-        System.out.println("7 - Visualizar dados");
+        System.out.println("7 - Visualizar dados do cliente");
+        System.out.println("8 - Visualizar dados da conta");
+        System.out.println("9 - Visualizar contas");
         System.out.println("0 - Sair");
         System.out.print("Digite a opção desejada: ");
         int opcao = input.nextInt();
 
-        // switch (opcao) {
-        //     case 1:
-        //         System.out.print("Digite o número da conta destino para o depósito: ");
-        //         int numero = input.nextInt();
+        switch (opcao) {
+            case 1:
+                deposita(null, input);
+                break;
 
-        //     case 5:
-        //         newConta(input, contas, clientes);
+            case 5:
+                newConta(cliente, contas, input);
+                break;
 
-        //     case 7:
-        //         visualizarDadosCliente(clientes, contas);
-
-        // }
+            case 8:
+                verDados(cliente, contas, input);
+                break;
+        }
     }
 
-    // public static void newConta(Scanner input, List<Conta> contas, List<Cliente> clientes) {
-    //     System.out.println("Criar uma nova conta:");
+    public static void newConta(Cliente cliente, List<Conta> contas, Scanner input) {
+        System.out.println("Você deseja criar uma nova conta? (S/N) => ");
+        String opc = input.next();
 
-    //     Cliente client = clientes.stream().filter(client -> client.)
+        if(opc.equals("S")) {
+            Conta newConta = cliente.newConta();
+            contas.add(newConta);
+            System.out.println("Conta criada com sucesso.\nProprietário: " + cliente.getNome() + "\nNúmero da conta: " + contas.get(-1).getNumero());
+        } else {
+            System.out.println("Conta não criada!");
+        }
+    }
 
-    //     Conta novaConta = new Conta(cliente);
+    public static void deposita(Conta conta, Scanner input) {
+        System.out.println("Digite o valor a ser depositado: ");
+        double valor = input.nextDouble();
+        conta.depositar(valor);
+    }
 
-    //     contas.add(novaConta);
-    //     System.out.println("Conta criada com sucesso.");
-    // }
-
-    // public static void visualizarDadosCliente(List<Cliente> clientes, List<Conta> contas) {
-    //     System.out.println("Dados do cliente:");
-    //     System.out.println("Nome: " + cliente.getNome());
-    //     System.out.println("CPF: " + cliente.getCpf());
-    //     System.out.println("Data de Nascimento: " + cliente.getDataNascimento());
-    //     System.out.println("Endereço: " + cliente.getEndereco());
-    
-    //     int numContas = 0;
-    //     for (Conta conta : contas) {
-    //         if (conta.getCliente() == cliente) {
-    //             numContas++;
-    //             System.out.println("Conta " + numContas + ":");
-    //             System.out.println("Agência: " + conta.getAgencia());
-    //             System.out.println("Número da Conta: " + conta.getNumero());
-    //             System.out.println("Saldo: " + conta.getSaldo());
-    //             System.out.println();
-    //         }
-    //     }
-    
-    //     if (numContas == 0) {
-    //         System.out.println("O cliente não possui contas.");
-    //     }
-    // }
+    public static void verDados(Cliente cliente, List<Conta> contas, Scanner input) {
+        System.out.println("Digite o número da conta: ");
+        int numero = input.nextInt();
+        Conta conta = contas.stream()
+                .filter(cont -> cont.getNumero() == numero)
+                .findFirst()
+                .orElse(null);
+        if (conta != null) {
+            System.out.println("Número da conta: " + conta.getNumero());
+            System.out.println("Saldo: " + conta.getSaldo());
+            System.out.println("Proprietário: " + conta.getCliente().getNome());
+        } else {
+            System.out.println("Conta não encontrada.");
+        }
+    }
 }

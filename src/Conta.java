@@ -17,21 +17,24 @@ public class Conta {
         this.transacoes = new ArrayList<>();
     }
 
-    public Conta create() {
-        return new Conta(cliente);
-    }
-
     public void depositar(double valor) {
         this.saldo += valor;
+        addTransacoes(valor, "Depósito");
     }
 
     public boolean sacar(double valor) {
         if (valor < this.saldo) {
             this.saldo -= valor;
+            addTransacoes(valor, "Saque");
             return true;
         } else {
             return false;
         }
+    }
+
+    public void transferir(double valor){
+        this.saldo -= valor;
+        addTransacoes(valor, "Transferência");
     }
 
     public void verExtrato(List<Transacao> transacaos) {
@@ -44,6 +47,10 @@ public class Conta {
     public void addTransacoes(double valor, String tipo) {
         Transacao transacao = new Transacao(LocalDate.now(), valor, tipo);
         this.transacoes.add(transacao);
+    }
+
+    public String getNome(){
+        return cliente.getNome();
     }
 
     public int getNumero() {
