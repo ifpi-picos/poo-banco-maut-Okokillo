@@ -3,20 +3,14 @@ public class Endereco {
     private String bairro;
     private String cidade;
     private String estado;
-    private String cep;
-    private int numero;
+    private String numero;
 
-    public Endereco(String rua, String bairro, String cidade, String estado, String cep, int numero) {
+    public Endereco(String rua, String bairro, String cidade, String estado, String numero) {
         this.rua = rua;
         this.bairro = bairro;
         this.cidade = cidade;
         this.estado = estado;
-        this.cep = cep;
         this.numero = numero;
-    }
-
-    public Endereco create() {
-        return new Endereco(rua, bairro, cidade, estado, cep, numero);
     }
 
     public String getRua() {
@@ -35,11 +29,7 @@ public class Endereco {
         return estado;
     }
 
-    public String getCep() {
-        return cep;
-    }
-
-    public int getNumero() {
+    public String getNumero() {
         return numero;
     }
 
@@ -60,14 +50,6 @@ public class Endereco {
             this.estado = estado;
         } else {
             System.out.println("Estado inválido");
-        }
-    }
-
-    public void setCep(String cep) {
-        if (cep.length() == 8) {
-            this.cep = cep;
-        } else {
-            System.out.println("CEP inválido");
         }
     }
 }
