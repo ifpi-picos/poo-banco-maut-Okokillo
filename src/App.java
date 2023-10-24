@@ -137,8 +137,6 @@ public class App {
         System.out.println("5 - Criar conta");
         System.out.println("6 - Editar dados");
         System.out.println("7 - Visualizar dados do cliente");
-        System.out.println("8 - Visualizar dados da conta");
-        System.out.println("9 - Visualizar contas");
         System.out.println("0 - Sair da conta");
         System.out.println("-----------------------------------");
         System.out.print("Digite a opção desejada: ");
@@ -149,11 +147,15 @@ public class App {
                 deposita(contas, scanner);
                 menuCliente(scanner, contas, clientes, enderecos, cliente);
 
+            case 2:
+                saca(contas, scanner, clientes);
+                menuCliente(scanner, contas, clientes, enderecos, cliente);
+
             case 5:
                 newConta(cliente, contas, scanner);
                 menuCliente(scanner, contas, clientes, enderecos, cliente);
 
-            case 8:
+            case 7:
                 verContas(contas, clientes, enderecos, scanner);
                 menuCliente(scanner, contas, clientes, enderecos, cliente);
 
@@ -209,6 +211,35 @@ public class App {
             System.out.println("Saldo atual: " + conta.getSaldo());
         } else {
             System.out.println("Conta não encontrada.");
+        }
+    }
+
+    public static void saca(List<Conta> contas, Scanner scanner, List<Cliente> clientes) {
+        clearScreen(0);
+        System.out.print("Digite o número da conta: ");
+        int numero = scanner.nextInt();
+        System.out.print("Digite o valor a ser sacado: ");
+        double valor = scanner.nextDouble();
+        System.out.print("Digite o CPF do titular da conta: ");
+        String cpf = scanner.next();
+        Conta conta = contas.stream()
+                .filter(c -> c.getNumero() == numero)
+                .findFirst()
+                .orElse(null);
+        if (conta != null) {
+            Cliente titular = conta.getCliente();
+            if (titular.getCpf().equals(cpf)) {
+                conta.sacar(valor);
+                System.out.println("Saque realizado com sucesso!");
+                System.out.println("Saldo atual: " + conta.getSaldo());
+                clearScreen(3);
+            } else {
+                System.out.println("CPF inválido para o titular da conta.");
+                clearScreen(1);
+            }
+        } else {
+            System.out.println("Conta não encontrada.");
+            clearScreen(1);
         }
     }
 
