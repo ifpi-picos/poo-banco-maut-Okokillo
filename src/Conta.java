@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Conta {
-    private int numberAccount = 1;
+    private static int numberAccount = 1;
     private int numero;
     private int agencia;
     private double saldo;

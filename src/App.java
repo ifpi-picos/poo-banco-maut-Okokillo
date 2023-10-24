@@ -18,7 +18,7 @@ public class App {
             System.out.println("-----------------------------------");
             System.out.println("----- 1 -> Cadastrar Cliente ------");
             System.out.println("----- 2 -> Logar Cliente ----------");
-            System.out.println("----- 3 -> Sair -------------------");
+            System.out.println("----- 0 -> Sair -------------------");
             System.out.println("-----------------------------------");
             System.out.print("Digite a opção desejada: ");
             int opcao = scanner.nextInt();
@@ -31,7 +31,7 @@ public class App {
                     clearScreen(2);
                     newCliente(scanner, clientes, enderecos);
                     clearScreen(2);
-                    verDados(contas, clientes);
+                    verDados(contas, clientes, enderecos);
                     clearScreen(5);
                     break;
 
@@ -40,6 +40,7 @@ public class App {
                     break;
 
                 case 0:
+                    System.out.println("Saindo...");
                     System.exit(0);
                     break;
 
@@ -93,14 +94,16 @@ public class App {
     }
 
     public static void loginClient(Scanner scanner, List<Cliente> clientes, List<Conta> contas, List<Endereco> enderecos) {
+        clearScreen(0);
         System.out.println("-----------------------------------");
         System.out.println("------------ LOGIN ----------------");
         System.out.println("-----------------------------------");
-        System.out.println("Digite o cpf do cliente: ");
+        System.out.print("Digite o cpf do cliente: ");
         String cpf = scanner.nextLine();
         System.out.println("-----------------------------------");
         System.out.println("------------- AGUARDE -------------");
         System.out.println("-----------------------------------");
+        clearScreen(2);
     
         Cliente client = clientes.stream()
                 .filter(cliente -> cliente.getCpf().equals(cpf))
@@ -108,11 +111,15 @@ public class App {
                 .orElse(null);
     
         if (client != null) {
-            System.out.println("Digite sua data de nascimento: ");
+            System.out.print("Digite sua data de nascimento: ");
             LocalDate dn = LocalDate.parse(scanner.nextLine(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            clearScreen(2);
     
             if (client.getDataNascimento().equals(dn)) {
-                System.out.println("Bem-vindo(a), " + client.getNome());
+                clearScreen(0);
+                System.out.println("-----------------------------------");
+                System.out.println("------------ BEM-VINDO ------------");
+                System.out.println("-----------------------------------");
                 menuCliente(scanner, contas, clientes, enderecos, client);
             } else {
                 System.out.println("Dados incorretos.");
@@ -132,68 +139,113 @@ public class App {
         System.out.println("7 - Visualizar dados do cliente");
         System.out.println("8 - Visualizar dados da conta");
         System.out.println("9 - Visualizar contas");
-        System.out.println("0 - Sair");
+        System.out.println("0 - Sair da conta");
+        System.out.println("-----------------------------------");
         System.out.print("Digite a opção desejada: ");
         int opcao = scanner.nextInt();
 
         switch (opcao) {
             case 1:
-                deposita(null, scanner);
-                break;
+                deposita(contas, scanner);
+                menuCliente(scanner, contas, clientes, enderecos, cliente);
 
             case 5:
                 newConta(cliente, contas, scanner);
-                break;
+                menuCliente(scanner, contas, clientes, enderecos, cliente);
 
             case 8:
                 verContas(contas, clientes, enderecos, scanner);
-                break;
+                menuCliente(scanner, contas, clientes, enderecos, cliente);
+
+            case 0:
+                clearScreen(2);
+                System.out.println("Deslogando...");
+                clearScreen(2);
+                return;
+
+            default:
+                clearScreen(1);
+                System.out.println("Opção inválida");
+                clearScreen(1);
+                menuCliente(scanner, contas, clientes, enderecos, cliente);
         }
     }
 
     public static void newConta(Cliente cliente, List<Conta> contas, Scanner scanner) {
-        System.out.println("Você deseja criar uma nova conta? (S/N) => ");
-        String opc = scanner.next();
-
-        if(opc.equals("S")) {
-            Conta newConta = cliente.newConta();
-            contas.add(newConta);
-            System.out.println("Conta criada com sucesso.\nProprietário: " + cliente.getNome() + "\nNúmero da conta: " + contas.get(-1).getNumero());
+        clearScreen(0);
+        System.out.println("-----------------------------------");
+        System.out.println("------------ NOVA CONTA -----------");
+        System.out.println("-----------------------------------");
+        System.out.print("Você deseja criar uma nova conta? (s/n): ");
+        String opcao = scanner.next();
+        if (opcao.equals("s")) {
+            Conta conta = new Conta(cliente);
+            contas.add(conta);
+            System.out.println("Conta criada com sucesso!");
+            System.out.println("Número da conta: " + conta.getNumero());
+            System.out.println("Saldo: " + conta.getSaldo());
+            clearScreen(4);
         } else {
-            System.out.println("Conta não criada!");
+            System.out.println("Operação cancelada.");
+            System.out.println("-----------------------------------");
+            System.out.println("------------- AGUARDE -------------");
+            System.out.println("-----------------------------------");
+            clearScreen(2);
         }
     }
 
-    public static void deposita(Conta conta, Scanner scanner) {
-        System.out.println("Digite o valor a ser depositado: ");
+    public static void deposita(List<Conta> contas, Scanner scanner) {
+        System.out.print("Digite o número da conta: ");
+        int numero = scanner.nextInt();
+        System.out.print("Digite o valor a ser depositado: ");
         double valor = scanner.nextDouble();
-        conta.depositar(valor);
+        Conta conta = contas.stream()
+                .filter(c -> c.getNumero() == numero)
+                .findFirst()
+                .orElse(null);
+        if (conta != null) {
+            conta.depositar(valor);
+            System.out.println("Depósito realizado com sucesso!");
+            System.out.println("Saldo atual: " + conta.getSaldo());
+        } else {
+            System.out.println("Conta não encontrada.");
+        }
     }
 
-    public static void verDados(List<Conta> contas, List<Cliente> clientes) {
+    public static void verDados(List<Conta> contas, List<Cliente> clientes, List<Endereco> enderecos) {
+        System.out.println("-----------------------------------");
         Cliente client = clientes.get(clientes.size() - 1);
+        Endereco endereco = enderecos.get(enderecos.size() - 1);
         System.out.println("Nome: " + client.getNome());
         System.out.println("CPF: " + client.getCpf());
         System.out.println("Data de nascimento: " + client.getDataNascimento());
-        System.out.println("Endereço: " + client.getEndereco());
+        System.out.println("Endereço: " + endereco.getRua() + ", " + endereco.getNumero() + " - " + endereco.getBairro() + ", " + endereco.getCidade() + " - " + endereco.getEstado());
+        System.out.println("-----------------------------------");
+        System.out.println("------------- AGUARDE -------------");
+        System.out.println("-----------------------------------");
     }
 
     public static void verContas(List<Conta> contas, List<Cliente> clientes, List<Endereco> enderecos, Scanner input) {
-        System.out.println("Digite o CPF do cliente: ");
+        System.out.print("Digite o CPF do cliente: ");
         String cpf = input.next();
         boolean found = false;
         for (Cliente cliente : clientes) {
             if (cliente.getCpf().equals(cpf)) {
                 found = true;
+                clearScreen(0);
+                System.out.println("-----------------------------------");
                 System.out.println("Dados do cliente:");
                 System.out.println("Nome: " + cliente.getNome());
                 System.out.println("CPF: " + cliente.getCpf());
                 System.out.println("Data de nascimento: " + cliente.getDataNascimento());
+                System.out.println("-----------------------------------");
                 Endereco endereco = cliente.getEndereco();
                 System.out.println("Endereço: " + endereco.getRua() + ", " + endereco.getNumero() + " - " + endereco.getBairro() + ", " + endereco.getCidade() + " - " + endereco.getEstado());
+                System.out.println("-----------------------------------");
                 System.out.println("Contas do cliente " + cliente.getNome() + ":");
                 for (Conta conta : contas) {
                     if (conta.getCliente().equals(cliente)) {
+                        System.out.println("***********************************");
                         System.out.println("Número da conta: " + conta.getNumero());
                         System.out.println("Saldo: " + conta.getSaldo());
                     }
