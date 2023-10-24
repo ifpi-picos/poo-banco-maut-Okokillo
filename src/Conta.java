@@ -32,9 +32,11 @@ public class Conta {
         }
     }
 
-    public void transferir(double valor){
-        this.saldo -= valor;
-        addTransacoes(valor, "Transferência");
+    public void transferir(double valor, Conta conta) {
+        if (this.sacar(valor)) {
+            conta.depositar(valor);
+            addTransacoes(valor, "Transferência");
+        }
     }
 
     public void verExtrato(List<Transacao> transacaos) {

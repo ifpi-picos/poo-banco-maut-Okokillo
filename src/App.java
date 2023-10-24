@@ -151,6 +151,12 @@ public class App {
                 saca(contas, scanner, clientes);
                 menuCliente(scanner, contas, clientes, enderecos, cliente);
 
+            case 3:
+                transferir(contas, scanner, clientes);
+                menuCliente(scanner, contas, clientes, enderecos, cliente);
+
+            case 4:
+
             case 5:
                 newConta(cliente, contas, scanner);
                 menuCliente(scanner, contas, clientes, enderecos, cliente);
@@ -242,6 +248,60 @@ public class App {
             clearScreen(1);
         }
     }
+
+    public static void transferir(List<Conta> contas, Scanner scanner, List<Cliente> clientes) {
+        clearScreen(0);
+        System.out.print("Digite o número da conta: ");
+        int numero = scanner.nextInt();
+        System.out.print("Digite o valor a ser transferido: ");
+        double valor = scanner.nextDouble();
+        System.out.print("Digite o CPF do titular da conta: ");
+        String cpf = scanner.next();
+        Conta conta = contas.stream()
+                .filter(c -> c.getNumero() == numero)
+                .findFirst()
+                .orElse(null);
+        if (conta != null) {
+            Cliente titular = conta.getCliente();
+            if (titular.getCpf().equals(cpf)) {
+                System.out.print("Digite o número da conta de destino: ");
+                int numeroDestino = scanner.nextInt();
+                Conta contaDestino = contas.stream()
+                        .filter(c -> c.getNumero() == numeroDestino)
+                        .findFirst()
+                        .orElse(null);
+                if (contaDestino != null) {
+                    conta.transferir(valor, contaDestino);
+                    System.out.println("Transferência realizada com sucesso!");
+                    System.out.println("Saldo atual: " + conta.getSaldo());
+                    clearScreen(3);
+                } else {
+                    System.out.println("Conta de destino não encontrada.");
+                    clearScreen(1);
+                }
+            } else {
+                System.out.println("CPF inválido para o titular da conta.");
+                clearScreen(1);
+            }
+        } else {
+            System.out.println("Conta não encontrada.");
+            clearScreen(1);
+        }
+    }
+
+    // public static void verExtrato(List<Conta> contas, Scanner scanner) {
+    //     System.out.print("Digite o número da conta: ");
+    //     int numero = scanner.nextInt();
+    //     Conta conta = contas.stream()
+    //             .filter(c -> c.getNumero() == numero)
+    //             .findFirst()
+    //             .orElse(null);
+    //     if (conta != null) {
+    //         conta.verExtrato();
+    //     } else {
+    //         System.out.println("Conta não encontrada.");
+    //     }
+    // }
 
     public static void verDados(List<Conta> contas, List<Cliente> clientes, List<Endereco> enderecos) {
         System.out.println("-----------------------------------");
