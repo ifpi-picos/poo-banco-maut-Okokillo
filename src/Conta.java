@@ -39,11 +39,11 @@ public class Conta {
         }
     }
 
-    public void verExtrato(List<Transacao> transacaos) {
-        for(Transacao transacao : transacaos) {
-            System.out.println(transacao);
-            System.out.println("Saldo atual: " + this.saldo);
+    public void verExtrato() {
+        for (Transacao t : this.transacoes) {
+            System.out.println(t);
         }
+        System.out.println("Saldo atual: " + this.saldo);
     }
 
     public void addTransacoes(double valor, String tipo) {
@@ -69,5 +69,9 @@ public class Conta {
 
     public Cliente getCliente() {
         return cliente;
+    }
+
+    public String getCpf() {
+        return cliente.getCpf();
     }
 }

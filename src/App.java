@@ -74,8 +74,8 @@ public class App {
     public static void newEndereco(List<Endereco> enderecos, Scanner scanner) {
         System.out.println("-----------------------------------");
         System.out.print("- 1ª Etapa - Dados de localização -");
-        System.out.print("\nDigite o logradouro: ");
-        String logradouro = scanner.nextLine();
+        System.out.print("\nDigite o nome da rua: ");
+        String rua = scanner.nextLine();
         System.out.print("Digite o número: ");
         String numero = scanner.nextLine();
         System.out.print("Digite o nome do bairro: ");
@@ -88,7 +88,7 @@ public class App {
         System.out.println("------------- AGUARDE -------------");
         System.out.println("-----------------------------------");
 
-        Endereco endereco = new Endereco(logradouro, bairro, cidade, estado, numero);
+        Endereco endereco = new Endereco(rua, bairro, cidade, estado, numero);
 
         enderecos.add(endereco);
     }
@@ -145,6 +145,7 @@ public class App {
         switch (opcao) {
             case 1:
                 deposita(contas, scanner);
+                clearScreen(2);
                 menuCliente(scanner, contas, clientes, enderecos, cliente);
 
             case 2:
@@ -156,20 +157,23 @@ public class App {
                 menuCliente(scanner, contas, clientes, enderecos, cliente);
 
             case 4:
+                verExtrato(contas, scanner, clientes);
+                clearScreen(10);
+                menuCliente(scanner, contas, clientes, enderecos, cliente);
 
             case 5:
                 newConta(cliente, contas, scanner);
                 menuCliente(scanner, contas, clientes, enderecos, cliente);
 
             case 7:
-                verContas(contas, clientes, enderecos, scanner);
+                visualizarDados(contas, clientes, enderecos, scanner);
                 menuCliente(scanner, contas, clientes, enderecos, cliente);
 
             case 0:
                 clearScreen(2);
                 System.out.println("Deslogando...");
                 clearScreen(2);
-                return;
+                break;
 
             default:
                 clearScreen(1);
@@ -289,19 +293,41 @@ public class App {
         }
     }
 
-    // public static void verExtrato(List<Conta> contas, Scanner scanner) {
-    //     System.out.print("Digite o número da conta: ");
-    //     int numero = scanner.nextInt();
-    //     Conta conta = contas.stream()
-    //             .filter(c -> c.getNumero() == numero)
-    //             .findFirst()
-    //             .orElse(null);
-    //     if (conta != null) {
-    //         conta.verExtrato();
-    //     } else {
-    //         System.out.println("Conta não encontrada.");
-    //     }
-    // }
+    public static void verExtrato(List<Conta> contas, Scanner scanner, List<Cliente> clientes) {
+        clearScreen(0);
+        System.out.println("-----------------------------------");
+        System.out.println("------------ EXTRATO --------------");
+        System.out.println("-----------------------------------");
+        System.out.print("Digite o cpf do cliente: ");
+        String cpf = scanner.next();
+
+        Cliente client = clientes.stream()
+                .filter(cliente -> cliente.getCpf().equals(cpf))
+                .findFirst()
+                .orElse(null);
+
+        if (client != null) {
+            System.out.print("Digite o número da conta: ");
+            int numero = scanner.nextInt();
+            Conta conta = contas.stream()
+                    .filter(c -> c.getNumero() == numero && c.getCliente().equals(client))
+                    .findFirst()
+                    .orElse(null);
+            if (conta != null) {
+                conta.verExtrato();
+                System.out.print("Aperte ENTER para avançar => ");
+                scanner.nextLine();
+                scanner.nextLine();
+                System.out.println("-----------------------------------");
+                System.out.println("------------- AGUARDE -------------");
+                System.out.println("-----------------------------------");
+            } else {
+                System.out.println("Conta não encontrada.");
+            }
+        } else {
+            System.out.println("Cliente não encontrado.");
+        }
+    }
 
     public static void verDados(List<Conta> contas, List<Cliente> clientes, List<Endereco> enderecos) {
         System.out.println("-----------------------------------");
@@ -316,9 +342,10 @@ public class App {
         System.out.println("-----------------------------------");
     }
 
-    public static void verContas(List<Conta> contas, List<Cliente> clientes, List<Endereco> enderecos, Scanner input) {
+    public static void visualizarDados(List<Conta> contas, List<Cliente> clientes, List<Endereco> enderecos, Scanner scanner) {
+        clearScreen(0);
         System.out.print("Digite o CPF do cliente: ");
-        String cpf = input.next();
+        String cpf = scanner.next();
         boolean found = false;
         for (Cliente cliente : clientes) {
             if (cliente.getCpf().equals(cpf)) {
@@ -341,10 +368,79 @@ public class App {
                         System.out.println("Saldo: " + conta.getSaldo());
                     }
                 }
+                System.out.print("Aperte ENTER para prosseguir...");
+                scanner.nextLine();
+                clearScreen(2);
             }
         }
         if (!found) {
             System.out.println("Cliente não encontrado.");
+        }
+    }
+
+    public static void editarDados(List<Conta> contas, List<Cliente> clientes, List<Endereco> enderecos, Scanner scanner) {
+        clearScreen(0);
+        System.out.println("-----------------------------------");
+        System.out.println("------------ EDITAR ---------------");
+        System.out.println("-----------------------------------");
+        System.out.print("Digite o CPF do cliente: ");
+        String cpf = scanner.next();
+
+        Cliente client = clientes.stream().filter(c -> c.getCpf().equals(cpf)).findAny().orElse(null);
+
+        if (client != null) {
+            System.out.println("1 - Editar nome");
+            System.out.println("2 - Editar data de nascimento");
+            System.out.println("3 - Editar endereço");
+            System.out.println("0 - Sair");
+            System.out.println("Digite a opção desejada: ");
+            int opcao = scanner.nextInt();
+
+            switch (opcao) {
+                case 1:
+                    System.out.print("Digite o novo nome: ");
+                    String nome = scanner.next();
+                    client.setNome(nome);
+                    System.out.println("Nome alterado com sucesso!");
+                    clearScreen(2);
+                    break;
+
+                case 2:
+                    System.out.print("Digite a nova data de nascimento: ");
+                    LocalDate dn = LocalDate.parse(scanner.next(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                    client.setDataNascimento(dn);
+                    System.out.println("Data de nascimento alterada com sucesso!");
+                    clearScreen(2);
+                    break;
+
+                case 3:
+                    System.out.print("Digite o novo nome da rua: ");
+                    String rua = scanner.next();
+                    System.out.print("Digite o novo número: ");
+                    String numero = scanner.next();
+                    System.out.print("Digite o novo nome do bairro: ");
+                    String bairro = scanner.next();
+                    System.out.print("Digite o novo nome da cidade: ");
+                    String cidade = scanner.next();
+                    System.out.print("Digite o novo nome do estado: ");
+                    String estado = scanner.next();
+                    Endereco endereco = new Endereco(rua, bairro, cidade, estado, numero);
+                    client.setEndereco(endereco);
+                    System.out.println("Endereço alterado com sucesso!");
+                    clearScreen(2);
+                    break;
+
+                case 0:
+                    System.out.println("Saindo...");
+                    clearScreen(2);
+                    break;
+
+                default:
+                    System.out.println("Opção inválida");
+                    clearScreen(2);
+                    break;
+            }
+
         }
     }
 

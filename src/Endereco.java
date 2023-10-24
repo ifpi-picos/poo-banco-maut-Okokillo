@@ -46,10 +46,6 @@ public class Endereco {
     }
 
     public void setEstado(String estado) {
-        if (estado.length() == 2) {
-            this.estado = estado;
-        } else {
-            System.out.println("Estado inválido");
-        }
+        this.estado = estado;
     }
 }

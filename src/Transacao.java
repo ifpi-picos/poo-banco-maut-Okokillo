@@ -14,9 +14,9 @@ public class Transacao {
     @Override
     public String toString() {
         return "Transacao: " +
-                "Data =" + data +
-                " | Valor =" + valor +
-                " | Tipo ='" + tipo + '\'' +
+                "Data: " + data +
+                " | Valor: " + valor +
+                " | Tipo: '" + tipo + '\'' +
                 '}';
     }
 }

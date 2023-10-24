@@ -51,11 +51,11 @@ public class Cliente {
         }
     }
 
-    public void setDataNascimento(LocalDate dataNascimento) {
-        this.dataNascimento = dataNascimento;
-    }
-
     public void setEndereco(Endereco endereco) {
         this.endereco = endereco;
+    }
+
+    public void setDataNascimento(LocalDate dataNascimento) {
+        this.dataNascimento = dataNascimento;
     }
 }
