@@ -1,3 +1,7 @@
+package cliente;
+
+import conta.Conta;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +25,8 @@ public class Cliente {
         return new Cliente(nome, cpf, dataNascimento, endereco);
     }
 
-    public Conta newConta() {
-        Conta newConta = new Conta(this);
+    public Conta newConta(int agencia, Cliente cliente) {
+        Conta newConta = new Conta(agencia, this);
         contas.add(newConta);
         return newConta;
     }

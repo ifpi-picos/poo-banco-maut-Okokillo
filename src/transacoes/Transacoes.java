@@ -1,11 +1,13 @@
+package transacoes;
+
 import java.time.LocalDate;
 
-public class Transacao {
+public class Transacoes {
     private LocalDate data;
     private double valor;
     private String tipo;
 
-    public Transacao(LocalDate data, double valor, String tipo) {
+    public Transacoes(LocalDate data, double valor, String tipo) {
         this.data = data;
         this.valor = valor;
         this.tipo = tipo;

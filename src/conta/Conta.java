@@ -1,28 +1,34 @@
+package conta;
+
+import cliente.Cliente;
+import transacoes.Transacoes;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Conta {
+    private List<Transacoes> transacoes;
     private static int numberAccount = 1;
     private int numero;
     private int agencia;
     private double saldo;
     private Cliente cliente;
-    private List<Transacao> transacoes;
 
-    public Conta(Cliente cliente) {
+    public Conta(int Agencia, Cliente cliente) {
+        this.agencia = agencia;
         this.cliente = cliente;
         this.numero = numberAccount++;
         this.saldo = 0.0;
         this.transacoes = new ArrayList<>();
     }
 
-    public void depositar(double valor) {
+    public void deposita(double valor) {
         this.saldo += valor;
         addTransacoes(valor, "Depósito");
     }
 
-    public boolean sacar(double valor) {
+    public boolean saca(double valor) {
         if (valor < this.saldo) {
             this.saldo -= valor;
             addTransacoes(valor, "Saque");
@@ -32,22 +38,22 @@ public class Conta {
         }
     }
 
-    public void transferir(double valor, Conta conta) {
-        if (this.sacar(valor)) {
-            conta.depositar(valor);
+    public void transfere(double valor, Conta conta) {
+        if (this.saca(valor)) {
+            conta.deposita(valor);
             addTransacoes(valor, "Transferência");
         }
     }
 
     public void verExtrato() {
-        for (Transacao t : this.transacoes) {
+        for (Transacoes t : this.transacoes) {
             System.out.println(t);
         }
         System.out.println("Saldo atual: " + this.saldo);
     }
 
     public void addTransacoes(double valor, String tipo) {
-        Transacao transacao = new Transacao(LocalDate.now(), valor, tipo);
+        Transacoes transacao = new Transacoes(LocalDate.now(), valor, tipo);
         this.transacoes.add(transacao);
     }
 

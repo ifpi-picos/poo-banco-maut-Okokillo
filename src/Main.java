@@ -2,9 +2,15 @@ import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter; 
+import java.time.format.DateTimeFormatter;
 
-public class App {
+import cliente.Cliente;
+import cliente.Endereco;
+import conta.ContaCorrente;
+import conta.ContaPoupanca;
+import conta.Conta;
+
+public class Main {
     public static void main(String[] args) throws Exception {
         Scanner scanner = new Scanner(System.in);
         List<Endereco> enderecos = new ArrayList<Endereco>();
@@ -74,7 +80,7 @@ public class App {
     public static void newEndereco(List<Endereco> enderecos, Scanner scanner) {
         System.out.println("-----------------------------------");
         System.out.print("- 1ª Etapa - Dados de localização -");
-        System.out.print("\nDigite o nome da rua: ");
+        System.out.print("\nDigite o logradouro: ");
         String rua = scanner.nextLine();
         System.out.print("Digite o número: ");
         String numero = scanner.nextLine();
@@ -104,17 +110,17 @@ public class App {
         System.out.println("------------- AGUARDE -------------");
         System.out.println("-----------------------------------");
         clearScreen(2);
-    
+
         Cliente client = clientes.stream()
                 .filter(cliente -> cliente.getCpf().equals(cpf))
                 .findFirst()
                 .orElse(null);
-    
+
         if (client != null) {
             System.out.print("Digite sua data de nascimento: ");
             LocalDate dn = LocalDate.parse(scanner.nextLine(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             clearScreen(2);
-    
+
             if (client.getDataNascimento().equals(dn)) {
                 clearScreen(0);
                 System.out.println("-----------------------------------");
@@ -144,12 +150,12 @@ public class App {
 
         switch (opcao) {
             case 1:
-                deposita(contas, scanner);
+                depositar(contas, scanner);
                 clearScreen(2);
                 menuCliente(scanner, contas, clientes, enderecos, cliente);
 
             case 2:
-                saca(contas, scanner, clientes);
+                sacar(contas, scanner, clientes);
                 menuCliente(scanner, contas, clientes, enderecos, cliente);
 
             case 3:
@@ -163,6 +169,10 @@ public class App {
 
             case 5:
                 newConta(cliente, contas, scanner);
+                menuCliente(scanner, contas, clientes, enderecos, cliente);
+
+            case 6:
+                editarDados(contas, clientes, enderecos, scanner);
                 menuCliente(scanner, contas, clientes, enderecos, cliente);
 
             case 7:
@@ -191,7 +201,9 @@ public class App {
         System.out.print("Você deseja criar uma nova conta? (s/n): ");
         String opcao = scanner.next();
         if (opcao.equals("s")) {
-            Conta conta = new Conta(cliente);
+            System.out.print("Digite o número da agência: ");
+            int agencia = scanner.nextInt();
+            Conta conta = new Conta(agencia, cliente);
             contas.add(conta);
             System.out.println("Conta criada com sucesso!");
             System.out.println("Número da conta: " + conta.getNumero());
@@ -206,7 +218,7 @@ public class App {
         }
     }
 
-    public static void deposita(List<Conta> contas, Scanner scanner) {
+    public static void depositar(List<Conta> contas, Scanner scanner) {
         System.out.print("Digite o número da conta: ");
         int numero = scanner.nextInt();
         System.out.print("Digite o valor a ser depositado: ");
@@ -216,7 +228,7 @@ public class App {
                 .findFirst()
                 .orElse(null);
         if (conta != null) {
-            conta.depositar(valor);
+            conta.deposita(valor);
             System.out.println("Depósito realizado com sucesso!");
             System.out.println("Saldo atual: " + conta.getSaldo());
         } else {
@@ -224,7 +236,7 @@ public class App {
         }
     }
 
-    public static void saca(List<Conta> contas, Scanner scanner, List<Cliente> clientes) {
+    public static void sacar(List<Conta> contas, Scanner scanner, List<Cliente> clientes) {
         clearScreen(0);
         System.out.print("Digite o número da conta: ");
         int numero = scanner.nextInt();
@@ -239,7 +251,7 @@ public class App {
         if (conta != null) {
             Cliente titular = conta.getCliente();
             if (titular.getCpf().equals(cpf)) {
-                conta.sacar(valor);
+                conta.saca(valor);
                 System.out.println("Saque realizado com sucesso!");
                 System.out.println("Saldo atual: " + conta.getSaldo());
                 clearScreen(3);
@@ -275,7 +287,7 @@ public class App {
                         .findFirst()
                         .orElse(null);
                 if (contaDestino != null) {
-                    conta.transferir(valor, contaDestino);
+                    conta.transfere(valor, contaDestino);
                     System.out.println("Transferência realizada com sucesso!");
                     System.out.println("Saldo atual: " + conta.getSaldo());
                     clearScreen(3);
