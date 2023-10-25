@@ -2,22 +2,25 @@ package conta;
 
 import cliente.Cliente;
 import transacoes.Transacoes;
+import notificacoes.Notificacoes;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Conta {
+public abstract class Conta {
     private List<Transacoes> transacoes;
     private static int numberAccount = 1;
     private int numero;
     private int agencia;
     private double saldo;
     private Cliente cliente;
+    private Notificacoes notificacoes;
 
-    public Conta(int agencia, Cliente cliente) {
+    public Conta(int agencia, Cliente cliente, Notificacoes notificacoes) {
         this.agencia = agencia;
         this.cliente = cliente;
+        this.notificacoes = notificacoes;
         this.numero = numberAccount++;
         this.saldo = 0.0;
         this.transacoes = new ArrayList<>();
@@ -26,24 +29,18 @@ public class Conta {
     public void deposita(double valor) {
         this.saldo += valor;
         addTransacoes(valor, "Depósito");
+        this.notificacoes.enviaNotificacao("deposito", valor);
     }
 
-    public boolean saca(double valor) {
-        if (valor < this.saldo) {
-            this.saldo -= valor;
-            addTransacoes(valor, "Saque");
-            return true;
-        } else {
-            return false;
-        }
+    public void saque(double valor){
+        this.saldo -=  valor;
+        addTransacoes(valor, "saque");
+        this.notificacoes.enviaNotificacao("saque", valor);
     }
 
-    public void transfere(double valor, Conta conta) {
-        if (this.saca(valor)) {
-            conta.deposita(valor);
-            addTransacoes(valor, "Transferência");
-        }
-    }
+    public abstract void transfere(double valor, Conta destino);
+
+    public abstract void deposito(double valor);
 
     public void verExtrato() {
         for (Transacoes t : this.transacoes) {
@@ -55,6 +52,10 @@ public class Conta {
     public void addTransacoes(double valor, String tipo) {
         Transacoes transacao = new Transacoes(LocalDate.now(), valor, tipo);
         this.transacoes.add(transacao);
+    }
+
+    public void setNotificacao(Notificacoes notificacoes) {
+        this.notificacoes = notificacoes;
     }
 
     public int qtdTransacoes() {

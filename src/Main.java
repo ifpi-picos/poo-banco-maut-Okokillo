@@ -8,6 +8,8 @@ import cliente.Cliente;
 import cliente.Endereco;
 import conta.ContaCorrente;
 import conta.ContaPoupanca;
+import notificacoes.NotificacoesEmail;
+import notificacoes.NotificacoesSMS;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -153,31 +155,38 @@ public class Main {
                 depositar(contasPoupancas, contasCorrente, scanner);
                 clearScreen(2);
                 menuCliente(scanner, contasPoupancas, contasCorrente, clientes, enderecos, cliente);
+                break;
 
             case 2:
-                sacar(contasPoupancas, contasCorrente, scanner, clientes);
+                saca(contasPoupancas, contasCorrente, scanner, clientes);
                 menuCliente(scanner, contasPoupancas, contasCorrente, clientes, enderecos, cliente);
+                break;
 
             case 3:
                 transferir(contasPoupancas, contasCorrente, scanner, clientes);
                 menuCliente(scanner, contasPoupancas, contasCorrente, clientes, enderecos, cliente);
+                break;
 
             case 4:
                 verExtrato(contasPoupancas, contasCorrente, scanner, clientes);
                 clearScreen(10);
                 menuCliente(scanner, contasPoupancas, contasCorrente, clientes, enderecos, cliente);
+                break;
 
             case 5:
                 newConta(cliente, contasPoupancas, contasCorrente, scanner);
                 menuCliente(scanner, contasPoupancas, contasCorrente, clientes, enderecos, cliente);
+                break;
 
             case 6:
                 editarDados(clientes, enderecos, scanner);
                 menuCliente(scanner, contasPoupancas, contasCorrente, clientes, enderecos, cliente);
+                break;
 
             case 7:
                 visualizarDados(contasPoupancas, contasCorrente, clientes, enderecos, scanner);
                 menuCliente(scanner, contasPoupancas, contasCorrente, clientes, enderecos, cliente);
+                break;
 
             case 0:
                 clearScreen(2);
@@ -190,6 +199,7 @@ public class Main {
                 System.out.println("Opção inválida");
                 clearScreen(1);
                 menuCliente(scanner, contasPoupancas, contasCorrente, clientes, enderecos, cliente);
+                break;
         }
     }
 
@@ -210,14 +220,14 @@ public class Main {
             System.out.println("Digite a opção desejada: ");
             int tipo = scanner.nextInt();
             if (tipo == 1) {
-                ContaPoupanca conta = cliente.newContaPoupanca(agencia, cliente);
+                ContaPoupanca conta = new ContaPoupanca(agencia, cliente, new NotificacoesSMS());
                 contasPoupancas.add(conta);
                 System.out.println("Conta criada com sucesso!");
                 System.out.println("Número da conta: " + conta.getNumero());
                 System.out.println("Saldo: " + conta.getSaldo());
                 clearScreen(4);
             } else if (tipo == 2) {
-                ContaCorrente conta = new ContaCorrente(agencia, cliente);
+                ContaCorrente conta = new ContaCorrente(agencia, cliente, new NotificacoesEmail(), 0.0);
                 contasCorrente.add(conta);
                 System.out.println("Conta criada com sucesso!");
                 System.out.println("Número da conta: " + conta.getNumero());
@@ -237,10 +247,13 @@ public class Main {
     }
 
     public static void depositar(List<ContaPoupanca> contasPoupancas, List<ContaCorrente> contasCorrente, Scanner scanner) {
+        clearScreen(0);
+        System.out.println("-----------------------------------");
+        System.out.println("----------- DEPÓSITO --------------");
+        System.out.println("-----------------------------------");
         System.out.print("Digite o número da conta: ");
         int numero = scanner.nextInt();
-        System.out.print("Digite o valor a ser depositado: ");
-        double valor = scanner.nextDouble();
+        
         ContaPoupanca contaPoupanca = contasPoupancas.stream()
                 .filter(c -> c.getNumero() == numero)
                 .findFirst()
@@ -250,13 +263,17 @@ public class Main {
                 .filter(c -> c.getNumero() == numero)
                 .findFirst()
                 .orElse(null);
-        
+
         if (contaPoupanca != null) {
-            contaPoupanca.deposita(valor);
+            System.out.print("Digite o valor do depósito: ");
+            double valor = scanner.nextDouble();
+            contaPoupanca.deposito(valor);
             System.out.println("Depósito realizado com sucesso!");
             System.out.println("Saldo atual: " + contaPoupanca.getSaldo());
         } else if (contaCorrente != null) {
-            contaCorrente.deposita(valor);
+            System.out.print("Digite o valor do depósito: ");
+            double valor = scanner.nextDouble();
+            contaCorrente.deposito(valor);
             System.out.println("Depósito realizado com sucesso!");
             System.out.println("Saldo atual: " + contaCorrente.getSaldo());
         } else {
@@ -264,105 +281,172 @@ public class Main {
         }
     }
 
-    public static void sacar(List<ContaPoupanca> contasPoupancas, List<ContaCorrente> contasCorrentes, Scanner scanner, List<Cliente> clientes) {
+    public static void saca(List<ContaPoupanca> contasPoupancas, List<ContaCorrente> contasCorrente, Scanner scanner, List<Cliente> clientes) {
         clearScreen(0);
-        System.out.print("Digite o número da conta: ");
-        int numero = scanner.nextInt();
-        System.out.print("Digite o valor a ser sacado: ");
-        double valor = scanner.nextDouble();
-        System.out.print("Digite o CPF do titular da conta: ");
+        System.out.println("-----------------------------------");
+        System.out.println("-------------- SAQUE --------------");
+        System.out.println("-----------------------------------");
+        System.out.print("Digite o cpf do cliente: ");
         String cpf = scanner.next();
-        
-        ContaPoupanca contaPoupanca = contasPoupancas.stream()
-                .filter(c -> c.getNumero() == numero)
+
+        Cliente client = clientes.stream()
+                .filter(cliente -> cliente.getCpf().equals(cpf))
                 .findFirst()
                 .orElse(null);
 
-        ContaCorrente contaCorrente = contasCorrentes.stream()
-                .filter(c -> c.getNumero() == numero)
-                .findFirst()
-                .orElse(null);
+        if (client != null) {
+            System.out.print("Digite o número da conta: ");
+            int numero = scanner.nextInt();
+            
+            ContaPoupanca contaPoupanca = contasPoupancas.stream()
+                    .filter(c -> c.getNumero() == numero)
+                    .findFirst()
+                    .orElse(null);
+            
+            ContaCorrente contaCorrente = contasCorrente.stream()
+                    .filter(c -> c.getNumero() == numero)
+                    .findFirst()
+                    .orElse(null);
 
-        if (contaPoupanca != null) {
-            Cliente titular = contaPoupanca.getCliente();
-            if (titular.getCpf().equals(cpf)) {
-                if (contaPoupanca.saca(valor)) {
+            if (contaPoupanca != null) {
+                Cliente titular = contaPoupanca.getCliente();
+                if (titular.getCpf().equals(cpf)) {
+                    System.out.print("Digite o valor do saque: ");
+                    double valor = scanner.nextDouble();
+                    contaPoupanca.saque(valor);
                     System.out.println("Saque realizado com sucesso!");
                     System.out.println("Saldo atual: " + contaPoupanca.getSaldo());
-                    clearScreen(3);
                 } else {
-                    System.out.println("Saldo insuficiente.");
-                    clearScreen(1);
+                    System.out.println("CPF inválido para o titular da conta.");
                 }
-            } else {
-                System.out.println("CPF inválido para o titular da conta.");
-                clearScreen(1);
-            }
-        } else if (contaCorrente != null) {
-            Cliente titular = contaCorrente.getCliente();
-            if (titular.getCpf().equals(cpf)) {
-                if (contaCorrente.getSaldo() <= (valor + contaCorrente.getChequeEspecial())) {
-                    contaCorrente.saca(valor);
+            } else if (contaCorrente != null) {
+                Cliente titular = contaCorrente.getCliente();
+                if (titular.getCpf().equals(cpf)) {
+                    System.out.print("Digite o valor do saque: ");
+                    double valor = scanner.nextDouble();
+                    contaCorrente.saque(valor);
                     System.out.println("Saque realizado com sucesso!");
                     System.out.println("Saldo atual: " + contaCorrente.getSaldo());
-                    clearScreen(3);
                 } else {
-                    System.out.println("Saldo insuficiente.");
-                    clearScreen(1);
+                    System.out.println("CPF inválido para o titular da conta.");
                 }
             } else {
-                System.out.println("CPF inválido para o titular da conta.");
-                clearScreen(1);
+                System.out.println("Conta não encontrada.");
             }
-        } else {
-            System.out.println("Conta não encontrada.");
-            clearScreen(1);
         }
     }
 
-    public static void transferir(List<ContaPoupanca> contasPoupancas, List<ContaCorrente> contasCorrentes, Scanner scanner, List<Cliente> clientes) {
+    public static void transferir(List<ContaPoupanca> contasPoupancas, List<ContaCorrente> contasCorrente, Scanner scanner, List<Cliente> clientes) {
         clearScreen(0);
+        System.out.println("-----------------------------------");
+        System.out.println("----------- TRANSFERIR ------------");
+        System.out.println("-----------------------------------");
         System.out.print("Digite o número da conta de origem: ");
-        int numero = scanner.nextInt();
-        System.out.print("Digite o valor a ser transferido: ");
-        double valor = scanner.nextDouble();
-        System.out.print("Digite o CPF do titular da conta: ");
-        String cpf = scanner.next();
+        int numeroOrigem = scanner.nextInt();
 
-        ContaPoupanca contaPoupanca = contasPoupancas.stream()
-                .filter(c -> c.getNumero() == numero)
+        ContaPoupanca contaPoupancaOrigem = contasPoupancas.stream()
+                .filter(c -> c.getNumero() == numeroOrigem)
                 .findFirst()
                 .orElse(null);
 
-        ContaCorrente contaCorrente = contasCorrentes.stream()
-                .filter(c -> c.getNumero() == numero)
+        ContaCorrente contaCorrenteOrigem = contasCorrente.stream().filter(c -> c.getNumero() == numeroOrigem)
                 .findFirst()
                 .orElse(null);
 
-        if (contaPoupanca != null) {
-            Cliente titular = contaPoupanca.getCliente();
-            if(titular.getCpf().equals(cpf)) {
-                System.out.print("Digite o número da conta de destino: ");
-                int numeroDestino = scanner.nextInt();
-                ContaPoupanca contaDestinoPoupanca = contasPoupancas.stream()
-                        .filter(c -> c.getNumero() == numeroDestino)
-                        .findFirst()
-                        .orElse(null);
+        if (contaPoupancaOrigem != null) {
+            System.out.print("Digite o CPF do cliente associado a conta de origem: ");
+            String cpf = scanner.next();
 
-                ContaCorrente contaDestinoCorrente = contasCorrentes.stream()
-                        .filter(c -> c.getNumero() == numeroDestino)
-                        .findFirst()
-                        .orElse(null);
+            Cliente client = clientes.stream()
+                    .filter(cliente -> cliente.getCpf().equals(cpf))
+                    .findFirst()
+                    .orElse(null);
+            
+            if (client != null) {
+                Cliente titular = contaPoupancaOrigem.getCliente();
+                if (titular.getCpf().equals(cpf)) {
+                    System.out.print("Digite o número da conta de destino: ");
+                    int numeroDestino = scanner.nextInt();
+                    
+                    ContaPoupanca contaPoupancaDestino = contasPoupancas.stream()
+                            .filter(c -> c.getNumero() == numeroDestino)
+                            .findFirst()
+                            .orElse(null);
+                    
+                    ContaCorrente contaCorrenteDestino = contasCorrente.stream()
+                            .filter(c -> c.getNumero() == numeroDestino)
+                            .findFirst()
+                            .orElse(null);
 
-                if (contaDestinoCorrente != null) {
-                    contaCorrente.transfere(valor, contaDestinoCorrente);
-                    System.out.println("Transferência realizada com sucesso!");
-                } else if (contaDestinoPoupanca != null) {
-                    contaPoupanca.transfere(valor, contaDestinoPoupanca);
+                    if (contaPoupancaDestino != null) {
+                        System.out.print("Digite o valor da transferência: ");
+                        double valor = scanner.nextDouble();
+                        contaPoupancaOrigem.transfere(valor, contaPoupancaDestino);
+                        System.out.println("Transferência realizada com sucesso!");
+                        System.out.println("Saldo atual: " + contaPoupancaOrigem.getSaldo());
+                    } else if (contaCorrenteDestino != null) {
+                        System.out.print("Digite o valor da transferência: ");
+                        double valor = scanner.nextDouble();
+                        contaPoupancaOrigem.transfere(valor, contaCorrenteDestino);
+                        System.out.println("Transferência realizada com sucesso!");
+                        System.out.println("Saldo atual: " + contaPoupancaOrigem.getSaldo());
+                    } else {
+                        System.out.println("Conta de destino não encontrada.");
+                    }
+
                 } else {
-                    System.out.println("Conta de destino não encontrada.");
+                    System.out.println("CPF inválido para o titular da conta.");
+                    clearScreen(2);
                 }
-            }   
+            } else {
+                System.out.println("Cliente não encontrado.");
+                clearScreen(2);
+            }
+        } else if (contaCorrenteOrigem != null) {
+            System.out.print("Digite o CPF do cliente associado a conta de origem: ");
+            String cpf = scanner.next();
+
+            Cliente client = clientes.stream()
+                    .filter(cliente -> cliente.getCpf().equals(cpf))
+                    .findFirst()
+                    .orElse(null);
+            
+            if (client != null) {
+                Cliente titular = contaCorrenteOrigem.getCliente();
+                if (titular.getCpf().equals(cpf)) {
+                    System.out.print("Digite o número da conta de destino: ");
+                    int numeroDestino = scanner.nextInt();
+                    
+                    ContaPoupanca contaPoupancaDestino = contasPoupancas.stream()
+                            .filter(c -> c.getNumero() == numeroDestino)
+                            .findFirst()
+                            .orElse(null);
+                    
+                    ContaCorrente contaCorrenteDestino = contasCorrente.stream()
+                            .filter(c -> c.getNumero() == numeroDestino)
+                            .findFirst()
+                            .orElse(null);
+
+                    if (contaPoupancaDestino != null) {
+                        System.out.print("Digite o valor da transferência: ");
+                        double valor = scanner.nextDouble();
+                        contaCorrenteOrigem.transfere(valor, contaPoupancaDestino);
+                        System.out.println("Transferência realizada com sucesso!");
+                        System.out.println("Saldo atual: " + contaCorrenteOrigem.getSaldo());
+                    } else if (contaCorrenteDestino != null) {
+                        System.out.print("Digite o valor da transferência: ");
+                        double valor = scanner.nextDouble();
+                        contaCorrenteOrigem.transfere(valor, contaCorrenteDestino);
+                        System.out.println("Transferência realizada com sucesso!");
+                        System.out.println("Saldo atual: " + contaCorrenteOrigem.getSaldo());
+                    } else {
+                        System.out.println("Conta de destino não encontrada.");
+                    }
+                }
+            }
+        } else {
+            System.out.println("Conta de origem não encontrada.");
+            clearScreen(2);
         }
     }
 

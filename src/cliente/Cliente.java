@@ -28,16 +28,12 @@ public class Cliente {
         return new Cliente(nome, cpf, dataNascimento, endereco);
     }
 
-    public ContaPoupanca newContaPoupanca(int agencia, Cliente cliente) {
-        ContaPoupanca newConta = new ContaPoupanca(agencia, this);
-        contasPoupancas.add(newConta);
-        return newConta;
+    public List<ContaPoupanca> getContasPoupancas() {
+        return contasPoupancas;
     }
 
-    public ContaCorrente newContaCorrente(int agencia, Cliente cliente) {
-        ContaCorrente newConta = new ContaCorrente(agencia, this);
-        contasCorrentes.add(newConta);
-        return newConta;
+    public List<ContaCorrente> getContasCorrentes() {
+        return contasCorrentes;
     }
 
     public String getNome() {
