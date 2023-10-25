@@ -61,6 +61,10 @@ public class Conta {
         return this.transacoes.size();
     }
 
+    public void setSaldo(double saldo) {
+        this.saldo = saldo;
+    }
+
     public String getNome(){
         return cliente.getNome();
     }

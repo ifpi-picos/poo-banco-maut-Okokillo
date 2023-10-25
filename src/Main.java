@@ -301,7 +301,8 @@ public class Main {
         } else if (contaCorrente != null) {
             Cliente titular = contaCorrente.getCliente();
             if (titular.getCpf().equals(cpf)) {
-                if (contaCorrente.saca(valor)) {
+                if (contaCorrente.getSaldo() <= (valor + contaCorrente.getChequeEspecial())) {
+                    contaCorrente.saca(valor);
                     System.out.println("Saque realizado com sucesso!");
                     System.out.println("Saldo atual: " + contaCorrente.getSaldo());
                     clearScreen(3);
@@ -443,7 +444,7 @@ public class Main {
                 Endereco endereco = cliente.getEndereco();
                 System.out.println("Endereço: " + endereco.getRua() + ", " + endereco.getNumero() + " - " + endereco.getBairro() + ", " + endereco.getCidade() + " - " + endereco.getEstado());
                 System.out.println("-----------------------------------");
-                System.out.println("Contas do cliente " + cliente.getNome() + ":");
+                System.out.println("Contas corrente do cliente " + cliente.getNome() + ":");
                 for (ContaCorrente contaCorrente : contasCorrente) {
                     if (contaCorrente.getCliente().getCpf().equals(cpf)) {
                         System.out.println("Número da conta: " + contaCorrente.getNumero());
@@ -451,6 +452,8 @@ public class Main {
                         System.out.println("-----------------------------------");
                     }
                 }
+                System.out.println("-----------------------------------");
+                System.out.println("Contas poupança do cliente " + cliente.getNome() + ":");
                 for (ContaPoupanca contaPoupanca : contasPoupancas) {
                     if (contaPoupanca.getCliente().getCpf().equals(cpf)) {
                         System.out.println("Número da conta: " + contaPoupanca.getNumero());
@@ -458,10 +461,10 @@ public class Main {
                         System.out.println("-----------------------------------");
                     }
                 }
-                System.out.print("Aperte ENTER para prosseguir...");
-                scanner.nextLine();
-                clearScreen(2);
             }
+            System.out.print("Aperte ENTER para prosseguir...");
+            scanner.nextLine();
+            clearScreen(2);
         }
         if (!found) {
             System.out.println("Cliente não encontrado.");

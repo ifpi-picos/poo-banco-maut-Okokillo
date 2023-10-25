@@ -8,7 +8,17 @@ public class ContaCorrente extends Conta{
 
     public ContaCorrente(int agencia, Cliente cliente) {
         super(agencia, cliente);
-        this.chequeEspecial = 200.0;
+        this.chequeEspecial = chequeEspecial();
+    }
+
+    public boolean saca(double valor) {
+        if (valor < super.getSaldo() + this.chequeEspecial) {
+            super.setSaldo(super.getSaldo() - valor);
+            addTransacoes(valor, "Saque");
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void transfere(double valor, Conta conta) {
@@ -18,10 +28,11 @@ public class ContaCorrente extends Conta{
         }
     }
 
-    public void chequeEspecial() {
+    public double chequeEspecial() {
         if(super.qtdTransacoes() % 10 == 0 && super.qtdTransacoes() != 0) {
             this.chequeEspecial += 20.0;
         }
+        return chequeEspecial;
     }
 
     public double getChequeEspecial() {
