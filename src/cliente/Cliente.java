@@ -1,13 +1,15 @@
 package cliente;
 
-import conta.Conta;
+import conta.ContaCorrente;
+import conta.ContaPoupanca;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Cliente {
-    private List<Conta> contas;
+    private List<ContaPoupanca> contasPoupancas;
+    private List<ContaCorrente> contasCorrentes;
     private String nome;
     private final String cpf;
     private LocalDate dataNascimento;
@@ -18,16 +20,23 @@ public class Cliente {
         this.cpf = cpf;
         this.dataNascimento = dataNascimento;
         this.endereco = endereco;
-        this.contas = new ArrayList<>();
+        this.contasPoupancas = new ArrayList<>();
+        this.contasCorrentes = new ArrayList<>();
     }
 
     public Cliente create() {
         return new Cliente(nome, cpf, dataNascimento, endereco);
     }
 
-    public Conta newConta(int agencia, Cliente cliente) {
-        Conta newConta = new Conta(agencia, this);
-        contas.add(newConta);
+    public ContaPoupanca newContaPoupanca(int agencia, Cliente cliente) {
+        ContaPoupanca newConta = new ContaPoupanca(agencia, this);
+        contasPoupancas.add(newConta);
+        return newConta;
+    }
+
+    public ContaCorrente newContaCorrente(int agencia, Cliente cliente) {
+        ContaCorrente newConta = new ContaCorrente(agencia, this);
+        contasCorrentes.add(newConta);
         return newConta;
     }
 

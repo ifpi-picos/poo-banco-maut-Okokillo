@@ -15,7 +15,7 @@ public class Conta {
     private double saldo;
     private Cliente cliente;
 
-    public Conta(int Agencia, Cliente cliente) {
+    public Conta(int agencia, Cliente cliente) {
         this.agencia = agencia;
         this.cliente = cliente;
         this.numero = numberAccount++;
@@ -55,6 +55,10 @@ public class Conta {
     public void addTransacoes(double valor, String tipo) {
         Transacoes transacao = new Transacoes(LocalDate.now(), valor, tipo);
         this.transacoes.add(transacao);
+    }
+
+    public int qtdTransacoes() {
+        return this.transacoes.size();
     }
 
     public String getNome(){
